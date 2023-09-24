@@ -3,13 +3,15 @@
 import { Actions } from "../types/index";
 export interface RootState {
   transactions: any[];
-  sendingError: string
+  sendingError: string;
+  currentWallet: string;
 }
 
 // Initial state
 const initialState: RootState = {
   transactions: [],
-  sendingError: ''
+  sendingError: '',
+  currentWallet:''
 };
 
 const reducer = (state = initialState, action: any): RootState => {
@@ -17,6 +19,9 @@ const reducer = (state = initialState, action: any): RootState => {
     // Action to handle sending error
     case Actions.SetSendingError:
       return {...state, sendingError: action.payload};
+    case Actions.setCurrentWallet:
+      return {...state, currentWallet: action.payload};
+
     default:
       return state;
   }

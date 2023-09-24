@@ -1,5 +1,7 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import Onboard, { WalletState } from '@web3-onboard/core'
+import { useDispatch } from 'react-redux'
+import { Actions } from '../types';
 
 // Task 2: adding and using injectedWallet module
 import injectedWalletsModule from '@web3-onboard/injected-wallets'
@@ -22,6 +24,7 @@ const onboard = Onboard({
 
 const Navigation: React.FC = () => {
   const [wallet, setWallet] = useState<WalletState>();
+  const dispatch = useDispatch();
 
   const handleConnect = useCallback(async () => {
     const wallets = await onboard.connectWallet();
@@ -32,6 +35,13 @@ const Navigation: React.FC = () => {
       setWallet(metamaskWallet);
     }
   }, []);
+
+  useEffect(() => {
+    dispatch({
+      type: Actions.setCurrentWallet,
+      payload: wallet?.accounts[0].address
+    })
+  }, [dispatch, wallet])
 
   return (
     <header className="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-ful text-sm py-4 bg-gray-800">

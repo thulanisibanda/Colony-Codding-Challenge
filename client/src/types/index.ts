@@ -25,4 +25,5 @@ export type Action<P> = {
 export enum Actions {
   SendTransaction = 'SEND_TRANSACTION',
   SetSendingError = 'SET_SENDING_ERROR',
+  setCurrentWallet = 'SET_CURRENT_WALLET'
 };

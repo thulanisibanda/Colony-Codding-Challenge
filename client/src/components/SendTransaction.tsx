@@ -11,6 +11,7 @@ interface FormValues {
 const SendTransaction: React.FC = () => {
   const dispatch = useDispatch();
   const sendingError = useSelector((state: any) => state.sendingError)
+  const currentWallet = useSelector((state: any) => state.currentWallet)
   const { handleSubmit, register, reset } = useForm<FormValues>();
 
   // for rendering loading text or spinner
@@ -76,8 +77,8 @@ const SendTransaction: React.FC = () => {
               </div>
               <div className="p-4 overflow-y-auto">
                 <p className="mt-1 mb-6 text-gray-800">Send ETH to a wallet address</p>
-                <label htmlFor="input-sender" className="block text-sm font-bold my-2">Sender:</label>
-                <input type="text" id="input-sender" className="opacity-70 pointer-events-none py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full" placeholder="Sender Address (Autocompleted)" disabled />
+                <label htmlFor="input-sender" className="block text-sm font-bold my-2">Sender (Autocompleted):</label>
+                <input type="text" id="input-sender" className="opacity-70 pointer-events-none py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full" placeholder={currentWallet} disabled />
                 <label htmlFor="input-recipient" className="block text-sm font-bold my-2">Recipient:</label>
                 {/* implementing form functionality 
                     adding validation for wallet addresses
@@ -89,11 +90,11 @@ const SendTransaction: React.FC = () => {
               </div>
               <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
                 {/* Using ref to reference button so i can close the modal programatically */}
-                <button ref={closeButtonRef} type="button" className="hs-dropdown-toggle py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm" data-hs-overlay="#hs-basic-modal">
+                <button ref={closeButtonRef} disabled={loading} type="button" className="hs-dropdown-toggle py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm" data-hs-overlay="#hs-basic-modal">
                   Close
                 </button>
                 {/* Clean up to use form functionality */}
-                <button type="submit" className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm">
+                <button type="submit" disabled={loading} className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm">
                   Send
                 </button>
               </div>
