@@ -5,6 +5,7 @@
 import BigNumber from 'bignumber.js';
 
 const convertWeiToEth = (wei: string): string =>  {
+    if (!wei || wei === '0') return '0';
     // convert wei to a big number object using the BigNumber library
     const weiBN = new BigNumber(wei);
     // define the conversion factor of 10^18 as a big number object

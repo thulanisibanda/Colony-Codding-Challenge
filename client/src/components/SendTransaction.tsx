@@ -90,7 +90,7 @@ const SendTransaction: React.FC = () => {
               </div>
               <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
                 {/* Using ref to reference button so i can close the modal programatically */}
-                <button ref={closeButtonRef} disabled={loading} type="button" className="hs-dropdown-toggle py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm" data-hs-overlay="#hs-basic-modal">
+                <button ref={closeButtonRef} type="button" className="hs-dropdown-toggle py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm" data-hs-overlay="#hs-basic-modal">
                   Close
                 </button>
                 {/* Clean up to use form functionality */}
