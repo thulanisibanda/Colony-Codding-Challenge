@@ -1,18 +1,56 @@
-import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux'
-import { useForm } from "react-hook-form";
-
+import React, { useCallback, useRef, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux'
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Actions } from '../types';
+
+interface FormValues {
+  to: string;
+  value: number;
+}
 
 const SendTransaction: React.FC = () => {
   const dispatch = useDispatch();
-  const { handleSubmit } = useForm();
+  const sendingError = useSelector((state: any) => state.sendingError)
+  const { handleSubmit, register, reset } = useForm<FormValues>();
 
-  const onSubmit = (data: any) => console.log(data);
+  // for rendering loading text or spinner
+  const [loading, setLoading] = useState(false)
 
-  const handleDispatch = useCallback(() => {
-    dispatch({
+  // for closing modal after send
+  const closeButtonRef = useRef<any>(null);
+
+  // to check if there are no sending errors
+  useEffect(() => {
+    if(sendingError === 'success') {
+      dispatch({
+        type: Actions.SetSendingError,
+        payload: ''
+      })
+      reset()
+      closeButtonRef.current.click()
+    }
+    setLoading(false)
+  }, [sendingError, dispatch, reset])
+
+
+  const onSubmit: SubmitHandler<FormValues> = async (data, e) => { 
+    if (!data.to || data.value <= 0) {
+      dispatch({
+        type: Actions.SetSendingError,
+        payload: 'Invalid input'
+      })
+      return;
+    }
+    setLoading(true)
+    // Task 5: sending data to saga
+    handleDispatch(data)
+  }
+
+
+  const handleDispatch = useCallback((payload: FormValues) => {
+     dispatch({
       type: Actions.SendTransaction,
+      payload
     });
   }, [dispatch]);
 
@@ -41,15 +79,21 @@ const SendTransaction: React.FC = () => {
                 <label htmlFor="input-sender" className="block text-sm font-bold my-2">Sender:</label>
                 <input type="text" id="input-sender" className="opacity-70 pointer-events-none py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full" placeholder="Sender Address (Autocompleted)" disabled />
                 <label htmlFor="input-recipient" className="block text-sm font-bold my-2">Recipient:</label>
-                <input type="text" id="input-recipient" className="opacity-70 pointer-events-none py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full" placeholder="Recipient Address" disabled />
-                <label htmlFor="input-amount" className="block text-sm font-bold my-2">Amount:</label>
-                <input type="number" id="input-amount" className="opacity-70 pointer-events-none py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full" placeholder="Amount" disabled />
+                {/* implementing form functionality 
+                    adding validation for wallet addresses
+                */}
+                <input {...register('to')} pattern="^0x[a-fA-F0-9]{40}$" type="text" id="input-recipient" className="opacity-70 py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full" placeholder="Recipient Address" />
+                <label htmlFor="input-amount" className="block text-sm font-bold my-2">Amount (WEI):</label>
+                <input {...register('value')} type="number" id="input-amount" className="opacity-70 py-3 px-4 block bg-gray-50 border-gray-800 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 w-full" placeholder="Amount"/>
+                <p className='text-center mt-2'>{loading? 'Sending....' : sendingError}</p>
               </div>
               <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
-                <button type="button" className="hs-dropdown-toggle py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm" data-hs-overlay="#hs-basic-modal">
+                {/* Using ref to reference button so i can close the modal programatically */}
+                <button ref={closeButtonRef} type="button" className="hs-dropdown-toggle py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm" data-hs-overlay="#hs-basic-modal">
                   Close
                 </button>
-                <button type="button" onClick={handleDispatch} className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm">
+                {/* Clean up to use form functionality */}
+                <button type="submit" className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm">
                   Send
                 </button>
               </div>
