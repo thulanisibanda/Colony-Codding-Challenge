@@ -1,32 +1,24 @@
-import { takeEvery } from 'redux-saga/effects';
+import { takeEvery, put } from 'redux-saga/effects';
 import { JsonRpcProvider, Transaction, TransactionResponse, TransactionReceipt, BrowserProvider, Signer } from 'ethers';
 
 import apolloClient from '../apollo/client';
 import { Actions } from '../types';
 import { SaveTransaction } from '../queries';
+import { navigate } from '../components/NaiveRouter';
 
-function* sendTransaction() {
+// passing data from form
+function* sendTransaction(data: any) {
   const provider = new JsonRpcProvider('http://localhost:8545');
-
   // this could have been passed along in a more elegant fashion,
   // but for the purpouses of this scenario it's good enough
   // @ts-ignore
   const walletProvider = new BrowserProvider(window.web3.currentProvider);
-
   const signer: Signer = yield walletProvider.getSigner();
-
   const accounts: Array<{ address: string }> = yield provider.listAccounts();
-
-  const randomAddress = () => {
-    const min = 1;
-    const max = 19;
-    const random = Math.round(Math.random() * (max - min) + min);
-    return accounts[random].address;
-  };
-
+// Task 3: using to and value from form
   const transaction = {
-    to: randomAddress(),
-    value: 1000000000000000000,
+    to: data.payload.to,
+    value: data.payload.value,
   };
 
   try {
@@ -52,9 +44,13 @@ function* sendTransaction() {
       mutation: SaveTransaction,
       variables,
     });
-
-  } catch (error) {
-    //
+    // setting error text to success for form closing logic
+    yield put({ type: 'SET_SENDING_ERROR', payload: 'success' })
+    // Task 4: navigating to transaction after success
+    navigate(`/transaction/${receipt.hash}`)
+  } catch (error: any) {
+    console.log(error)
+    yield put({ type: 'SET_SENDING_ERROR', payload: 'Something went wrong' })
   }
 
 }

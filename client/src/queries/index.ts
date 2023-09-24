@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 
+//Task 1: GrapgQL fix
 export const GetAllTransactions = gql`
   query GetAllTransactions {
     getAllTransactions {
@@ -11,7 +12,6 @@ export const GetAllTransactions = gql`
       data
       chainId
       hash
-      receipt
     }
   }
 `;
